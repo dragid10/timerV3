@@ -15,8 +15,8 @@ $(document).ready(function () {
 
     // Assigns the values of username and password to their respectful variables when anything is typed in fields
     $("#username, #password").keyup(function () {
-        username = $("#username").val().replace("<script>", "").replace("</script>", "");
-        password = $("#password").val().replace("<script>", "").replace("</script>", "");
+        username = $("#username").val().replace("<script>", "").replace("</script>", "").replace(/<.*?>/g, '');
+        password = $("#password").val().replace("<script>", "").replace("</script>", "").replace(/<.*?>/g, '');
 
         // Just logging out the variables to make sure data is being entered correctly
         console.log("Username = " + username);
@@ -43,19 +43,21 @@ $(document).ready(function () {
     $("#loginform").submit(function (event) {
         // When the form is submitted, prevent the default behavior, and instead make a post request
         event.preventDefault();
-        $.post("http://127.0.0.1:3610/loginform", formObj, function (data, status) {
-            console.log("Being sent:");
-            console.log(formObj);
 
-            // If the status is ok, then print this out to console
-            if (status === "ok") {
-                console.log("Stats was okay!");
-                console.log("Post request went through");
-            }
-        }, "json").error(function () {
-            // If an error occurs, then prints this out tothe console
-            console.error("Could not submit post data!");
-        })
-    })
+        // TODO Come back and fix this
+        /*$.post("http://127.0.0.1:3610/loginform", formObj, function (data, status) {
+         console.log("Being sent:");
+         console.log(formObj);
+
+         // If the status is ok, then print this out to console
+         if (status === "ok") {
+         console.log("Stats was okay!");
+         console.log("Post request went through");
+         }
+         }, "json").error(function () {
+         // If an error occurs, then prints this out tothe console
+         console.error("Could not submit post data!");
+         });*/
+    });
 
 });

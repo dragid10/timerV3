@@ -11,8 +11,8 @@ form {
     border: 3px solid #f1f1f1;
 }
 
-input[type=text], input[type=password] {
-    width: 100%;
+input[type=text], input[type=password], input[type=email] {
+    width: 97%;
     padding: 12px 20px;
     margin: 8px 0;
     display: inline-block;
@@ -24,19 +24,24 @@ input[type=text], input[type=password] {
     background-color: #4CAF50;
     color: white;
     padding: 14px 20px;
-    margin: 8px 0;
+    margin: 16px 0;
     border: none;
     cursor: pointer;
-    width: 100%;
+    width: 97%;
+}
+
+#registerCnt {
+    width: 97%;
 }
 
 .container2 {
     padding: 16px;
 }
 
-span.psw {
-    float: right;
-    padding-top: 16px;
+span.register {
+    float: left;
+    padding: 6px;
+    width: 98%;
 }
 
 /* Change styles for span and cancel button on extra small screens */

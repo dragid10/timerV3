@@ -52,7 +52,7 @@ module.exports = {
     },
 
     register: function (req, res) {
-        res.redirect('/register');
+        res.render("register");
     },
 
     logout: function (req, res) {

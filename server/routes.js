@@ -22,7 +22,7 @@ module.exports = function (app) {
     router.get('/', home.index);
     router.get('/about', home.about);
     router.get('/loginform', home.loginform);
-    router.post('/register', home.register);
+    router.get('/register', home.register);
     router.get('/logout', home.logout);
     router.post('/loginform', home.loginFormSubmit);
     router.post('/register', home.registerFormSubmit);
