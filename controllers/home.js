@@ -51,6 +51,10 @@ module.exports = {
         res.render("loginform");
     },
 
+    register: function (req, res) {
+        res.redirect('/register');
+    },
+
     logout: function (req, res) {
         // Clears user's session ID and takes them back to home page
         loginid = "";
@@ -78,5 +82,9 @@ module.exports = {
             };
             res.render('loginform', failure)
         }
+    },
+
+    registerFormSubmit: function (req, res) {
+        // TODO DO STUFF ON FORM SUBMISSION
     }
 };

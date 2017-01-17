@@ -2,7 +2,7 @@
  * Name: Alex Oladele
  * Date: 1/14/17
  * Course CSE 270e
- * Assignment: Timer v1.0
+ * Assignment: Timer v2.0
  */
 
 // Hide and show the info on button click
