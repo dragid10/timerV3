@@ -4,13 +4,15 @@
  * Course CSE 270e
  * Assignment: Timer v2.0
  */
+
+
+
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
     path = require('path');
 mongoose.Promise = global.Promise;
 
-
-var UserSchema = new Schema({
+var UserSchema = new mongoose.Schema({
     username:   String,
     password:   String,
     email:      String,
@@ -18,7 +20,6 @@ var UserSchema = new Schema({
     visits:     {type: Number, default: 0}
 });
 
-var User = mongoose.model('User', UserSchema);
 
 // ==================================================== Functions
 /**
@@ -38,9 +39,16 @@ UserSchema.methods.checkPassword = function (username, password, callback) {
 UserSchema.methods.checkExists = function (username, callback) {
     this.model('User').find({username: username}, function (error, result) {
         if (error) {
-            console.log(error)
+            console.log("Twas a error");
         }
-        return result.length > 0;
+        if (result.length > 0) {
+            var e = new Error("User already exists");
+            console.log(e);
+            callback('User already exists! (from schema)', null);
+        } else {
+            console.log("User does not already exist (WHICH IS GOOD)");
+            callback(null, result)
+        }
     })
 };
 
@@ -50,18 +58,22 @@ UserSchema.pre('save', function (next) {
     //see if user exists and if so throw err
     if (this.username.length < 2 || this.password.length < 2 || this.email.length < 2) {
         var e = new Error("Invalid username, password or email");
+        console.log(e);
         next(e);
     }
+    console.log("Saved user successfully!");
+    next();
 });
 
 // ==================================================== End Functions
 
 
-var a = new User({username: "scott", password: "hello", email: "campbest@miamioh.edu"});
+var User = mongoose.model('User', UserSchema);
 
+var a = new User({username: "scott", password: "hello", email: "campbest@miamioh.edu"});
 a.save(function (err) {
     if (err)
-        console.log(err);
+        console.log("This is an error: " + err);
 });
 module.exports = User;
 

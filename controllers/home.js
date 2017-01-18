@@ -18,7 +18,9 @@ var loginid = "",
     password = "",
     email = "",
     failure = {},
-    u;
+    u,
+    // good = 888, bad = 666, default = 0
+    statusK = 0;
 
 // Necessary for some reason
 mongoose.Promise = global.Promise;
@@ -106,9 +108,6 @@ module.exports = {
     },
 
     registerFormSubmit: function (req, res) {
-        // TODO DO STUFF ON FORM SUBMISSION
-        console.log("Got to register submit");
-        // debugger;
         if (req) {
             u = new User({
                 username: req.body.username,
@@ -121,10 +120,6 @@ module.exports = {
             username = u.username.replace(/<.*?>/g, "").trim();
             password = u.password.replace(/<.*?>/g, "").trim();
             email = u.email.replace(/<.*?>/g, "").trim();
-
-            console.log(u.username);
-            console.log(u.password);
-            console.log(u.email);
 
             // If any of the fields are empty after sanitation, then return an error using the view model
             if (isEmpty(u.username) || isEmpty(password) || isEmpty(u.email)) {
@@ -141,41 +136,44 @@ module.exports = {
             if (passwordHash.isHashed(hashword)) {
                 u.password = hashword;
             }
-            // TODO do lots of checking and if they all pass
 
-            console.log("TRYING TO USE METHOD ALREADY");
-            // Checks to see if the username already exists in the db
-            u.checkExists(u.username, function (err, res) {
-                if (err) {
-                    console.log(err);
-                }
-                if (res === true) {
-                    console.log("User already exists in db!");
-                    failure = {
-                        errormsg: "User already exists!"
-                    };
-                    res.render('register', failure);
-                } else {
-                    u.save(function (err) {
-                        // check error conditions and render the new page
-                        if (err) {
-                            console.log(err);
-                            failure = {
-                                errormsg: "Error occurred, and couldn't save you to database",
-                                userid:   username
-                            };
-                            res.render('register', failure);
-                        }
-                        u.save();
-                        var vModel = {
-                            userid: u.username
+            function check(callback) {
+                // Checks to see if the username already exists in the db
+                u.checkExists(u.username, function (err, res) {
+                    // If error comes back, or res is null, then the user already exists
+                    if (err || res === null) {
+                        console.log(err);
+                        failure = {
+                            errormsg: "User already exists1!"
                         };
-                        res.render('timer', vModel);
-                    })
+                        status = 666;
+                        callback(status);
+                    } else {
+                        // Means that user does not exist and will be saved
+                        status = 888;
+                        callback(status);
+                    }
+                });
+            }
+
+            // Callback to do after checking is user is already in system or not
+            check(function (status) {
+                // 666 means bad!
+                if (status === 666) {
+                    res.render('register', failure);
+                } else if (status === 888) {
+                    // 888 means good!
+                    u.save();
+                    var vModel = {
+                        userid: u.username
+                    };
+                    loginid = u.username;
+                    // Redirect to the login page with the login id
+                    res.redirect('/');
+                } else {
+                    console.log("Status was 0!");
                 }
-
-
-            });
+            })
         }
     }
 };
