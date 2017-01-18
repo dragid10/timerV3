@@ -9,7 +9,8 @@
 
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
-    path = require('path');
+    path = require('path'),
+    passwordHash = require('password-hash');
 mongoose.Promise = global.Promise;
 
 var UserSchema = new mongoose.Schema({
@@ -31,7 +32,16 @@ var UserSchema = new mongoose.Schema({
 UserSchema.methods.checkPassword = function (username, password, callback) {
     this.model('User').find({username: username}, function (error, result) {
         if (error) {
-            // TODO
+            console.log("Twas a error");
+        } else {
+            if (result.length !== 1) {
+                var e = new Error("User Not Found in Database!");
+                console.log(e);
+                callback(e, null);
+            } else {
+                console.log("Got exactly " + result.length + " result back!");
+                callback(null, result)
+            }
         }
     })
 };
@@ -39,16 +49,19 @@ UserSchema.methods.checkPassword = function (username, password, callback) {
 UserSchema.methods.checkExists = function (username, callback) {
     this.model('User').find({username: username}, function (error, result) {
         if (error) {
+            // Prints error to console if there was one
             console.log("Twas a error");
-        }
-        if (result.length > 0) {
-            var e = new Error("User already exists");
-            console.log(e);
-            callback('User already exists! (from schema)', null);
         } else {
-            console.log("User does not already exist (WHICH IS GOOD)");
-            callback(null, result)
+            if (result.length > 0) {
+                var e = new Error("User already exists");
+                console.log(e);
+                callback(e, null);
+            } else {
+                console.log("User does not already exist (WHICH IS GOOD)");
+                callback(null, result)
+            }
         }
+
     })
 };
 
@@ -71,6 +84,10 @@ UserSchema.pre('save', function (next) {
 var User = mongoose.model('User', UserSchema);
 
 var a = new User({username: "scott", password: "hello", email: "campbest@miamioh.edu"});
+var hashword = passwordHash.generate(a.password);
+if (passwordHash.isHashed(hashword)) {
+    a.password = hashword;
+}
 a.save(function (err) {
     if (err)
         console.log("This is an error: " + err);

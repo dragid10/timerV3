@@ -12,7 +12,6 @@ $(document).ready(function () {
         password = null,
         formObj = {};
 
-
     // Assigns the values of username and password to their respectful variables when anything is typed in fields
     $("#username, #password").keyup(function () {
         username = $("#username").val().replace("<script>", "").replace("</script>", "").replace(/<.*?>/g, '');
@@ -39,25 +38,23 @@ $(document).ready(function () {
         $("#username").focus();
     }
 
-
     $("#loginform").submit(function (event) {
         // When the form is submitted, prevent the default behavior, and instead make a post request
         event.preventDefault();
 
-        // TODO Come back and fix this
-        /*$.post("http://127.0.0.1:3610/loginform", formObj, function (data, status) {
-         console.log("Being sent:");
-         console.log(formObj);
+        $.post("http://127.0.0.1:3610/loginform", formObj, function (data, status) {
+            console.log("Being sent:");
+            console.log(formObj);
 
-         // If the status is ok, then print this out to console
-         if (status === "ok") {
-         console.log("Stats was okay!");
-         console.log("Post request went through");
-         }
-         }, "json").error(function () {
-         // If an error occurs, then prints this out tothe console
-         console.error("Could not submit post data!");
-         });*/
+            // If the status is ok, then print this out to console
+            if (status === "ok") {
+                console.log("Stats was okay!");
+                console.log("Post request went through");
+            }
+        }, "json").error(function () {
+            // If an error occurs, then prints this out tothe console
+            console.error("Could not submit post data!");
+        });
     });
 
 });

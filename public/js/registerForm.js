@@ -2,7 +2,7 @@
  * Name: Alex Oladele
  * Date: 1/17/17
  * Course CSE 270e
- * Assignment: //TODO
+ * Assignment: Timer v2.0
  */
 
 // Waits until document has finished loading before using Jquery
@@ -76,7 +76,6 @@ $(document).ready(function () {
         if (hasError === true) {
             console.log("The form contains an error, must be fixed before continuing");
         } else {
-            // TODO COME BACK TO UNCOMMENT THIS WHEN CODE IS WORKING PROPERLY SO YOU DON'T FLOOD DATABASE WITH RANDOM INFO (OR LEARN HOW TO CLEAR ALL OUT OF THE DB)
             $.post("http://127.0.0.1:3620/register", formObj, function (data, status) {
                 // If the status is ok, then print this out to console
                 if (status === "ok") {

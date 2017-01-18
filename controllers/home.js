@@ -19,8 +19,8 @@ var loginid = "",
     email = "",
     failure = {},
     u,
+    uOut;
     // good = 888, bad = 666, default = 0
-    statusK = 0;
 
 // Necessary for some reason
 mongoose.Promise = global.Promise;
@@ -89,19 +89,64 @@ module.exports = {
         var dataIn = req.body;
 
         // Checks to verify that both pieces of information are there, and that password equals test
-        if (dataIn.username && dataIn.password && dataIn.password === "test") {
-            req.session.userid = dataIn.username;
-            loginid = req.session.userid;
+        if (dataIn.username && dataIn.password) {
+            // Assigns data to uOut schema
+            uOut = new User({
+                username: dataIn.username,
+                password: dataIn.password
+            });
 
-            res.redirect('/');
+            // Hashes password for later check
+            function checkP(callback) {
+                // Checks to see if the username already exists in the db
+                uOut.checkPassword(uOut.username, uOut.password, function (err, res) {
+                    // If error comes back, or res is null, then the user not found in database
+                    if (err || res === null) {
+                        console.log(err);
+                        failure = {
+                            errormsg: "User Not Found in Database!"
+                        };
+                        status = 666;
+                        callback(status, null);
+                    } else {
+                        // Means that user found in database
+                        status = 888;
+                        callback(status, res);
+                    }
+                });
+            }
+
+            checkP(function (status, result) {
+                // If status is 666 then the user does not exist in the database
+                if (status === 666) {
+                    var failure = {
+                        errormsg: "User Does Not Exist!"
+                    };
+                    res.render('loginform', failure)
+                } else if (status === 888) {
+                    //  If status is 888 then the user does exist in the database!
+                    var dbUser = result[0];
+                    if (passwordHash.verify(uOut.password, dbUser.password) == true) {
+                        req.session.userid = uOut.username;
+                        loginid = req.session.userid;
+                        res.redirect('/');
+                    } else {
+                        var userid1 = uOut.username;
+                        // viewModel sent back if the password was incorrect
+                        var failure2 = {
+                            errormsg: "Invalid username or password",
+                            userid:   userid1
+                        };
+                        res.render('loginform', failure2)
+                    }
+                } else {
+                    console.log("Status was zero, which is bad");
+                }
+            });
         } else {
-            req.session.userid = dataIn.username;
-            var userid1 = req.session.userid;
-
             // viewModel sent back if the password was incorrect
             var failure = {
-                errormsg: "invalid username or password",
-                userid:   userid1
+                errormsg: "A Field was not filled out!"
             };
             res.render('loginform', failure)
         }
@@ -144,7 +189,7 @@ module.exports = {
                     if (err || res === null) {
                         console.log(err);
                         failure = {
-                            errormsg: "User already exists1!"
+                            errormsg: "User already exists!"
                         };
                         status = 666;
                         callback(status);
@@ -167,7 +212,8 @@ module.exports = {
                     var vModel = {
                         userid: u.username
                     };
-                    loginid = u.username;
+                    req.session.userid = u.username;
+                    loginid = req.session.userid;
                     // Redirect to the login page with the login id
                     res.redirect('/');
                 } else {
