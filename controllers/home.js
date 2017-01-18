@@ -129,6 +129,12 @@ module.exports = {
                     if (passwordHash.verify(uOut.password, dbUser.password) == true) {
                         req.session.userid = uOut.username;
                         loginid = req.session.userid;
+                        // Update num of visits
+                        uOut.visits++;
+                        // Update current date
+                        var curDate = Date.now();
+                        var last = curDate - uOut.lastAccess;
+                        uOut.lastAccess = (curDate - last);
                         res.redirect('/');
                     } else {
                         var userid1 = uOut.username;
