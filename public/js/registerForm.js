@@ -12,14 +12,14 @@ $(document).ready(function () {
         password = null,
         password2 = null,
         email = null,
+        hasError = false,
         formObj = {};
-    $($);;;;;;;;;;;;;;;;;;;;;;;;;;
+    $($);
 
     // ========================================================== Functions
     function isEmpty(str) {
         return (!str || 0 === str.length);
     }
-
 
     // ========================================================== End Functions
 
@@ -41,7 +41,6 @@ $(document).ready(function () {
         formObj = {
             "username":  username.replace(/<.*?>/g, ''),
             "password":  password.replace(/<.*?>/g, ''),
-            "password2": password2.replace(/<.*?>/g, ''),
             "email":     email.replace(/<.*?>/g, '')
         };
 
@@ -57,9 +56,16 @@ $(document).ready(function () {
     }
 
     $("#loginBtn").click(function (event) {
-        if (isEmpty(username) || isEmpty(password) || isEmpty(password2) || isEmpty(email)) {
-            alert("One of the required fields is not filled out!");
+        if (password !== password2) {
             event.preventDefault();
+            hasError = true;
+            alert("The passwords do not match!");
+        }
+
+        if (isEmpty(username) || isEmpty(password) || isEmpty(password2) || isEmpty(email)) {
+            event.preventDefault();
+            hasError = true;
+            alert("Cannot have empty fields!");
         }
     });
 
@@ -67,18 +73,21 @@ $(document).ready(function () {
         // When the form is submitted, prevent the default behavior, and instead make a post request
         event.preventDefault();
 
-        // TODO Come back and fix this
-        $.post("http://127.0.0.1:3620/registerform", formObj, function (data, status) {
-
-            // If the status is ok, then print this out to console
-            if (status === "ok") {
-                console.log("Stats was okay!");
-                console.log("Post request went through");
-            }
-        }, "json").error(function () {
-            // If an error occurs, then prints this out to the console
-            console.error("Could not submit post data!");
-        });
+        if (hasError === true) {
+            console.log("The form contains an error, must be fixed before continuing");
+        } else {
+            // TODO COME BACK TO UNCOMMENT THIS WHEN CODE IS WORKING PROPERLY SO YOU DON'T FLOOD DATABASE WITH RANDOM INFO (OR LEARN HOW TO CLEAR ALL OUT OF THE DB)
+            $.post("http://127.0.0.1:3620/register", formObj, function (data, status) {
+                // If the status is ok, then print this out to console
+                if (status === "ok") {
+                    console.log("Stats was okay!");
+                    console.log("Post request went through");
+                }
+            }, "json").error(function () {
+                // If an error occurs, then prints this out to the console
+                console.error("Could not submit post data!");
+            });
+        }
     });
 
 });

@@ -4,6 +4,10 @@
  Course: CSE 270e
  */
 
+// Modules
+var User = require('../models/user');
+var passwordHash = require('password-hash');
+
 // Necessary to see if user already has a session
 var loginid = "";
 
@@ -86,5 +90,18 @@ module.exports = {
 
     registerFormSubmit: function (req, res) {
         // TODO DO STUFF ON FORM SUBMISSION
+        console.log("register submit");
+
+        var u = new User({
+            username: req.body.username,
+            password: req.body.password,
+            email:    req.body.email
+        });
+
+        // TODO do lots of checking and if they all pass
+
+        u.save(function (err) {
+            // check error conditions and render the new page
+        });
     }
 };

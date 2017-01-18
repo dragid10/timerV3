@@ -10,13 +10,15 @@
     <link href="../public/css/loginForm.css" rel="stylesheet">
 </head>
 
-<br>
+<!--<br>-->
 <h2>Register For Timer</h2>
 {{#if errormsg}}
-    <div class="alert alert-danger"><strong>Error:</strong> Invalid Username or Password Entered!</div> {{/if}}
+    <div class="alert alert-danger"><strong>Error:</strong> {{errormsg}} </div> {{/if}}
+
 <br>
 <form role="form" method="post" id="loginForm">
     <div class="container">
+        <br>
         <label for="username"><b>Username</b></label>
 
         {{#if userid}}
@@ -36,7 +38,7 @@
         <input type="password" class="form-control" placeholder="Re-enter Password" name="password-again" id="password2"
                required>
 
-        <label for="email"><b>Password</b></label>
+        <label for="email"><b>Email</b></label>
 
         <!--TODO  Change email input type back to 'email'-->
         <input type="text" class="form-control" placeholder="Enter email" name="email" id="email">
