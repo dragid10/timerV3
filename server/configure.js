@@ -21,7 +21,8 @@ var path = require('path'),
     errorHandler = require('errorhandler'),
     moment = require('moment'),
     multer = require('multer'),
-    session = require('express-session');
+    session = require('express-session'),
+    mongoose = require("mongoose");
 /* End of Modules */
 
 

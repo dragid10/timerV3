@@ -9,10 +9,15 @@
 // Grab modules needed
 var express = require('express'),
     router = express.Router(),
-    home = require('../controllers/home');
+    home = require('../controllers/home'),
+    mongoose = require('mongoose'),
+    Schema = mongoose.Schema;
+mongoose.Promise = global.Promise;
+
+
 
 // Creates the module that this file is and attaches all the routes to the app instance
-// Routes to the proper controller and data for the controller | Remember that home is a var, and index is one of its properties
+// Routes to the proper controller and data for the controller | Remember that home is a var, and index.js is one of its properties
 
 module.exports = function (app) {
     /**

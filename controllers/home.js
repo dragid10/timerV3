@@ -5,13 +5,31 @@
  */
 
 // Modules
-var User = require('../models/user');
-var passwordHash = require('password-hash');
+var mongoose = require("mongoose"),
+    Schema = mongoose.Schema,
+    User = new require('../models').User,
+    passwordHash = require('password-hash');
+mongoose.Promise = global.Promise;
+
 
 // Necessary to see if user already has a session
-var loginid = "";
+var loginid = "",
+    username = "",
+    password = "",
+    email = "",
+    failure = {},
+    u;
 
-// Exports Module with single function called index
+// Necessary for some reason
+mongoose.Promise = global.Promise;
+
+// ======================================== Functions
+function isEmpty(str) {
+    return (!str || 0 === str.length);
+}
+// ======================================== End Functions
+
+// Exports Module with single function called index.js
 module.exports = {
     /**
      *
@@ -74,7 +92,6 @@ module.exports = {
             loginid = req.session.userid;
 
             res.redirect('/');
-            // res.render('timer')
         } else {
             req.session.userid = dataIn.username;
             var userid1 = req.session.userid;
@@ -90,18 +107,75 @@ module.exports = {
 
     registerFormSubmit: function (req, res) {
         // TODO DO STUFF ON FORM SUBMISSION
-        console.log("register submit");
+        console.log("Got to register submit");
+        // debugger;
+        if (req) {
+            u = new User({
+                username: req.body.username,
+                password: req.body.password,
+                email:    req.body.email
+            });
 
-        var u = new User({
-            username: req.body.username,
-            password: req.body.password,
-            email:    req.body.email
-        });
 
-        // TODO do lots of checking and if they all pass
+            // Sanitizes data (removes any html tags) and trims whitespace
+            username = u.username.replace(/<.*?>/g, "").trim();
+            password = u.password.replace(/<.*?>/g, "").trim();
+            email = u.email.replace(/<.*?>/g, "").trim();
 
-        u.save(function (err) {
-            // check error conditions and render the new page
-        });
+            console.log(u.username);
+            console.log(u.password);
+            console.log(u.email);
+
+            // If any of the fields are empty after sanitation, then return an error using the view model
+            if (isEmpty(u.username) || isEmpty(password) || isEmpty(u.email)) {
+                // viewModel sent back if the username or password is empty
+                failure = {
+                    errormsg: "Invalid username, password, or email",
+                    userid:   username
+                };
+                res.render('register', failure);
+            }
+
+            // Hashes the password to become the "hashword" (ha)
+            var hashword = passwordHash.generate(u.password);
+            if (passwordHash.isHashed(hashword)) {
+                u.password = hashword;
+            }
+            // TODO do lots of checking and if they all pass
+
+            console.log("TRYING TO USE METHOD ALREADY");
+            // Checks to see if the username already exists in the db
+            u.checkExists(u.username, function (err, res) {
+                if (err) {
+                    console.log(err);
+                }
+                if (res === true) {
+                    console.log("User already exists in db!");
+                    failure = {
+                        errormsg: "User already exists!"
+                    };
+                    res.render('register', failure);
+                } else {
+                    u.save(function (err) {
+                        // check error conditions and render the new page
+                        if (err) {
+                            console.log(err);
+                            failure = {
+                                errormsg: "Error occurred, and couldn't save you to database",
+                                userid:   username
+                            };
+                            res.render('register', failure);
+                        }
+                        u.save();
+                        var vModel = {
+                            userid: u.username
+                        };
+                        res.render('timer', vModel);
+                    })
+                }
+
+
+            });
+        }
     }
 };
