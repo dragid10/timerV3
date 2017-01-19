@@ -12,15 +12,13 @@ var express = require('express'),
     app = express(), // assigns global var app to the express function
     mongoose = require('mongoose'); // require mongoose
 var MongoClient = require('mongodb').MongoClient,
-    mongoURL = 'mongodb://localhost/timerv2';
-
-
+    mongoURL = 'mongodb://localhost/timerv3';
 
 /*Defines constants for the application using node.*/
 
 // Constant that sets port equal to the default port of the system. Fallback port is 3300
 // Port = 3610
-app.set('port', process.env.PORT || 3620);
+app.set('port', process.env.PORT || 3630);
 
 // Constant that Sets views to the views directory
 // views = views folder

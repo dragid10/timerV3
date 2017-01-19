@@ -29,6 +29,7 @@ module.exports = function (app) {
     router.get('/loginform', home.loginform);
     router.get('/register', home.register);
     router.get('/logout', home.logout);
+    // router.get('/api/v1/:username/:timerNum',api.getTimer);
     router.post('/loginform', home.loginFormSubmit);
     router.post('/register', home.registerFormSubmit);
 

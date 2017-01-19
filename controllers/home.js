@@ -20,7 +20,7 @@ var loginid = "",
     failure = {},
     u,
     uOut;
-    // good = 888, bad = 666, default = 0
+// good = 888, bad = 666, default = 0
 
 // Necessary for some reason
 mongoose.Promise = global.Promise;
@@ -227,5 +227,23 @@ module.exports = {
                 }
             })
         }
+    },
+
+    getTimer: function (req, res) {
+        var a = Timer.find({username: req.params.username, timerNum: req.params.timerNum}, function (err, result) {
+            var d = {};
+            if (err) {
+                d.error = err;
+                console.log("get timer error ");
+                console.log(err);
+            } else {
+                if (result[0])
+                    d.timer = result[0];
+                else
+                    d.timer = "";
+                d.error = "";
+            }
+            res.json(d);
+        });
     }
 };
