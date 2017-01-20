@@ -30,10 +30,10 @@ module.exports = function (app) {
     router.get('/loginform', home.loginform);
     router.get('/register', home.register);
     router.get('/logout', home.logout);
-    router.get('/api.js/v1/:username/:timerNum', api.getTimer);
+    router.get('/api/v1/timer/:username/:timerNum', api.getTimer);
 
     // PUT CALLS
-    router.put('/api.js/v1/timer/:username/:timernum', api.putTimer);
+    router.put('/api/v1/timer/:username/:timernum', api.putTimer);
 
     // POST CALLS
     router.post('/loginform', home.loginFormSubmit);

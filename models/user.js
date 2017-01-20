@@ -67,7 +67,6 @@ UserSchema.methods.checkExists = function (username, callback) {
 
 UserSchema.pre('save', function (next) {
     console.log(this);
-
     //see if user exists and if so throw err
     if (this.username.length < 2 || this.password.length < 2 || this.email.length < 2) {
         var e = new Error("Invalid username, password or email");

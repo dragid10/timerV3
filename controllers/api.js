@@ -7,95 +7,154 @@
 // Modules
 var mongoose = require("mongoose"),
     Schema = mongoose.Schema,
-    User = new require('../models').User,
-    Timer = new require('../models').Timer,
-    passwordHash = require('password-hash');
+    Timer = new require('../models/timer');
 mongoose.Promise = global.Promise;
+
+var inTimer = new Timer({});
 
 module.exports = {
     getTimer: function (req, res) {
-        var a = Timer.find({username: req.params.username, timerNum: req.params.timerNum}, function (err, result) {
-            var d = {};
+        debugger;
+        var outTimer = new Timer({});
+        var d = {
+            timer: null,
+            error: null
+        };
+        var q = function getInfo(callback) {
+            outTimer.checkForUser(req.params.username, req.params.timerNum, function (err, result) {
+                if (err) {
+                    d.error = err;
+                    console.log("get timer error ");
+                    console.log(err);
+                } else {
+                    if (result[0]) {
+                        callback(null, result);
+                    } else {
+                        callback(null, result);
+                    }
+                }
+            })
+        };
+
+        q(function (err, result) {
             if (err) {
-                d.error = err;
-                console.log("get timer error ");
-                console.log(err);
+                var e = new Error("There was an error!");
+                console.log(e);
+            } else if (result.length <= 0) {
+                d.timer = "";
+                d.error = "Could not get Timer!";
+                res.json(d)
             } else {
-                if (result[0])
-                    d.timer = result[0];
-                else
-                    d.timer = "";
+                d.timer = result[0];
                 d.error = "";
+                res.json(d);
             }
-            res.json(d);
         });
+
+
     },
 
     putTimer: function (req, res) {
+        debugger;
+        // Variables used
+        // var promise = query.exec();
         var d = {};
-        var inTimer = new Timer;
+        console.log(req.body);
         var dataIn = req.body;
+        inTimer = {
+            username: dataIn.username,
+            timerNum: dataIn.timerNum
+        };
+        var a = function saveUser(timerQ, callback) {
+            var timer = new Timer({
+                username:  timerQ.username,
+                timerName: timerQ.timerName,
+                timerNum:  timerQ.timerNum,
+                doneTime:  timerQ.doneTime,
+                state:     timerQ.state
+            });
+            timer.addToMongo(inTimer.username, inTimer.timerName, inTimer.timerNum, inTimer.doneTime, inTimer.state, function (err, result) {
+                if (err) {
+                    console.log("eRROR I guess")
+                }
+                callback(null, result);
+            })
+        };
 
-        function checkForUser(callback) {
+        // Find method to check if user is in database
+        var b = function checkForUser(callback) {
             Timer.find({username: req.params.username, timerNum: req.params.timerNum}, function (err, result) {
                 if (err) {
-                    var e = new Error("An error occured searching from the database!");
+                    var e = new Error("An error occurred searching from the database!");
                     console(e);
                     callback(e, null);
                 } else {
                     console.log("Database successfully searched. " + result.length + " result came back");
+                    console.log(err);
+                    console.log(result);
                     callback(null, result);
                 }
             })
-        }
+        };
 
-        // TODO Old sstuff, fix later
-        /*debugger;
-         var dataIn = req.body, query = {username: req.params.username, timerNum: req.params.timerNum};
+        var c = function updateUser(callback) {
+            Timer.update({username: req.params.username, timerNum: req.params.timerNum}, {
+                $set: {
+                    username:  dataIn.username,
+                    timerName: dataIn.timerName,
+                    timerNum:  dataIn.timerNum,
+                    doneTime:  dataIn.doneTime,
+                    state:     dataIn.state
+                }
+            }, function (err) {
+                if (err) {
+                    var e = new Error("An error occurred updating the database!");
+                    console(e);
+                    callback(e);
+                } else {
+                    console.log("Database successfully updated!");
+                    callback(null);
+                }
+            })
+        };
 
-         var b = Timer.findOne(query, function (err, doc) {
-         if (err) {
-         var e = new Error("Error updating Data!");
-         console.log(e);
-         } else {
-         // doc = doc.toObject();
-         console.log(doc);
-         console.log(doc[0]);
-         inTimer = doc;
-         d.save();
-         }
-         });
-         res.json(d);
-         */
-        /*  var a =
-         Timer.find(query,  function (err, result) {
-         if (err) {
-         d.error = err;
-         console.log("get timer error ");
-         console.log(err);
-         } else if (result.length > 0) {
 
-         } else {
-         /!*if (result[0])
-         d.timer = result[0];
-         else
-         d.timer = "";
-         d.error = "";*!/
-         d.timer = req.params.timerNum;
+        // What to do after the db check
+        b(function (err, result) {
+            if (err) {
+                var e = new Error("An error occurred! (Couldn't search database most likely)");
+                console.log(e);
+            } else {
+                if (result.length < 1) {
+                    inTimer = {
+                        username:  dataIn.username,
+                        timerName: dataIn.timerName,
+                        timerNum:  dataIn.timerNum,
+                        doneTime:  dataIn.doneTime,
+                        state:     dataIn.state
+                    };
+                    a(inTimer, function (status, result) {
+                        console.log(status);
+                    });
+                    res.json(inTimer);
+                } else {
+                    c(function (status) {
+                        if (status) {
+                            console.log("There was an error updating the user in the database");
+                        } else {
+                            console.log("No troubles updating the user in the database!");
+                        }
+                    });
+                    inTimer = {
+                        timerName: dataIn.timerName,
+                        doneTime:  dataIn.doneTime,
+                        state:     dataIn.state
+                    };
+                    res.json(inTimer);
+                }
+            }
 
-         console.log("Stored timer");
-         }
-         inTimer = {
-         username:  req.body.username,
-         timerName: req.body.timerName,
-         timerNum:  req.body.timerNum,
-         doneTime:  req.body.doneTime,
-         state:     req.body.state
-         };
-         inTimer.save();
-
-         res.json(d);
-         });*/
+        });
     }
 
 };
