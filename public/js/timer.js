@@ -9,26 +9,41 @@
 $(document).ready(function () {
 
     // Used variables
+    // var mongoose = require("mongoose"),
+    // Timer = new require('../models').User,
     var timeToAdd = 0,
         curTime = 0,
         reset = 0,
+        username,
         hours = [],
         timers = [], timer1 = {
-            hrs:  0,
-            min:  0,
-            sec:  0,
-            name: ""
+            hrs:      0,
+            min:      0,
+            sec:      0,
+            name:     "",
+            doneTime: 0,
+            state:    0
         }, timer2 = {
-            hrs:  0,
-            min:  0,
-            sec:  0,
-            name: ""
+            hrs:      0,
+            min:      0,
+            sec:      0,
+            name:     "",
+            doneTime: 0,
+            state:    0
 
         }, timer3 = {
-            hrs:  0,
-            min:  0,
-            sec:  0,
-            name: ""
+            hrs:      0,
+            min:      0,
+            sec:      0,
+            name:     "",
+            doneTime: 0,
+            state:    0
+        }, putObj = {}, timerDB = {
+            username:  "",
+            timerName: "",
+            timerNum:  "",
+            doneTime:  0,
+            state:     0
         };
 
     // Loop to populate timers array
@@ -230,6 +245,60 @@ $(document).ready(function () {
         }
     }
 
+    function prepForDB(context) {
+        if (isTimer1(context)) {
+            timerDB = {
+                username:  username,
+                timerName: timer1.name,
+                timerNum:  1,
+                doneTime:  timer1.doneTime,
+                state:     timer1.state
+            };
+        } else if (isTimer2(context)) {
+            timerDB = {
+                username:  username,
+                timerName: timer2.name,
+                timerNum:  2,
+                doneTime:  timer2.doneTime,
+                state:     timer2.state
+            };
+        } else if (isTimer3(context)) {
+            timerDB = {
+                username:  username,
+                timerName: timer3.name,
+                timerNum:  3,
+                doneTime:  timer3.doneTime,
+                state:     timer3.state
+            };
+        }
+        var apiURL = '127.0.0.1:3630/api.js/v1/timer/' + username + '/' + timerDB.timerNum;
+
+        console.log(timerDB.doneTime);
+        console.log("puturl: " + apiURL);
+
+        $.get(apiUrl, function (data, status) {
+            // debugger;
+            if (status === "success" && data != "") {
+                var formData = data.data;
+                console.log("Status was good! Successful GET!");
+                // console.log(formData);
+            } else {
+                console.log("GET not successful");
+            }
+        }, "json");
+
+        // PUT method call
+        $.ajax({
+            url:      apiURL,    //Your api url
+            type:     'PUT',   //type is any HTTP method
+            data:     timerDB,      //Data as js object
+            success:  function () {
+                console.log("Successful PUT!")
+            },
+            dataType: 'json'
+        });
+    }
+
 // =============================================================== End Functions
 
     /**
@@ -262,6 +331,11 @@ $(document).ready(function () {
         // Loophole var that tricks js into not displaying red on reset blick
         reset = 0;
 
+        if ($("#welcomeBar").text().length > 4) {
+            var userID = $("#welcomeBar").text().trim();
+            username = userID.substring(6, userID.indexOf("!"));
+        }
+
         // Switch statement that changes the Buttons and colors when clicked
         switch ($(this).text()) {
             // Start button is clicked, then it changes the color and adds the reset button next to it
@@ -276,6 +350,8 @@ $(document).ready(function () {
                     tempTimer.doneTime = timeToAdd + curTime;
                     tempTimer.state = 1;
                     decrementTimers();
+                    timer1.doneTime = tempTimer.doneTime;
+                    timer1.state = tempTimer.state;
 
                 } else if ($(this).closest(".timers").attr('id') === "timer2") {
                     timeToAdd = convertToSeconds(timer2.hrs, timer2.min, timer2.sec);
@@ -285,6 +361,8 @@ $(document).ready(function () {
                     tempTimer.doneTime = timeToAdd + curTime;
                     tempTimer.state = 1;
                     decrementTimers();
+                    timer2.doneTime = tempTimer.doneTime;
+                    timer2.state = tempTimer.state;
 
                 } else if ($(this).closest(".timers").attr('id') === "timer3") {
                     timeToAdd = convertToSeconds(timer3.hrs, timer3.min, timer3.sec);
@@ -294,6 +372,8 @@ $(document).ready(function () {
                     tempTimer.doneTime = timeToAdd + curTime;
                     tempTimer.state = 1;
                     decrementTimers();
+                    timer3.doneTime = tempTimer.doneTime;
+                    timer3.state = tempTimer.state;
 
                 } else {
                     console.log("Selector Wasn't found, try to experiment");
@@ -335,6 +415,7 @@ $(document).ready(function () {
             default:
                 console.log("Hit Default statement for some reason");
         }
+
         // Checks to make sure reset btn has been created
         if ($(".reset").length) {
             $(".reset").click(function () {
@@ -369,5 +450,7 @@ $(document).ready(function () {
                 }
             })
         }
+
+        prepForDB($(this));
     });
 });

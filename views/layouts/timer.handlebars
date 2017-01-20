@@ -38,8 +38,6 @@
 
     <link rel="stylesheet" href="../../public/css/styles.css" type="text/css">
 
-    <script>document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1"></' + 'script>')</script>
-
 </head>
 <body>
 <div class="container">
@@ -67,7 +65,7 @@
     </nav>
 
 {{#if loginid}}
-        <div class="alert alert-success">
+        <div class="alert alert-success" id="welcomeBar">
             Hello {{loginid}}!
         </div>
     </div>
@@ -88,6 +86,6 @@
 
 <script src="../../public/js/timer.js"></script>
 <script src="../../public/js/tabs.js"></script>
-
+<script>document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1"></' + 'script>')</script>
 </body>
 </html>

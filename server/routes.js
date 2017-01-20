@@ -8,12 +8,12 @@
 
 // Grab modules needed
 var express = require('express'),
-    router = express.Router(),
+    router = express(),
     home = require('../controllers/home'),
+    api = require('../controllers/api'),
     mongoose = require('mongoose'),
     Schema = mongoose.Schema;
 mongoose.Promise = global.Promise;
-
 
 
 // Creates the module that this file is and attaches all the routes to the app instance
@@ -24,15 +24,21 @@ module.exports = function (app) {
      * @param path - The path that the browser must go to in order to invoke the callback function
      * @param callBack - The controller that handles what happens when the browser goes to this page
      */
+    // GET CALLS
     router.get('/', home.index);
     router.get('/about', home.about);
     router.get('/loginform', home.loginform);
     router.get('/register', home.register);
     router.get('/logout', home.logout);
-    // router.get('/api/v1/:username/:timerNum',api.getTimer);
+    router.get('/api.js/v1/:username/:timerNum', api.getTimer);
+
+    // PUT CALLS
+    router.put('/api.js/v1/timer/:username/:timernum', api.putTimer);
+
+    // POST CALLS
     router.post('/loginform', home.loginFormSubmit);
     router.post('/register', home.registerFormSubmit);
 
     // Attaches routes to app instance
-    app.use(router);
+    app.use('/', router);
 };

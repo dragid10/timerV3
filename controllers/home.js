@@ -8,6 +8,7 @@
 var mongoose = require("mongoose"),
     Schema = mongoose.Schema,
     User = new require('../models').User,
+    Timer = new require('../models').Timer,
     passwordHash = require('password-hash');
 mongoose.Promise = global.Promise;
 
@@ -21,9 +22,6 @@ var loginid = "",
     u,
     uOut;
 // good = 888, bad = 666, default = 0
-
-// Necessary for some reason
-mongoose.Promise = global.Promise;
 
 // ======================================== Functions
 function isEmpty(str) {
@@ -227,23 +225,5 @@ module.exports = {
                 }
             })
         }
-    },
-
-    getTimer: function (req, res) {
-        var a = Timer.find({username: req.params.username, timerNum: req.params.timerNum}, function (err, result) {
-            var d = {};
-            if (err) {
-                d.error = err;
-                console.log("get timer error ");
-                console.log(err);
-            } else {
-                if (result[0])
-                    d.timer = result[0];
-                else
-                    d.timer = "";
-                d.error = "";
-            }
-            res.json(d);
-        });
     }
 };
