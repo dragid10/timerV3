@@ -433,19 +433,18 @@ $(document).ready(function () {
     getTimerInfoFromDB();
     decrementTimers();
 
-
 // Checks that there are numbers being input into the number boxes NUM-CONTENT
     $("#timer1").find(".hours, .minutes, .seconds, .timername").keyup(function () {
-        updateTimerObj($(this));
-        getTimerInfoFromDB();
+        // updateTimerObj($(this));
+        // getTimerInfoFromDB();
     });
     $("#timer2").find(".hours, .minutes, .seconds, .timername").keyup(function () {
-        updateTimerObj($(this));
-        getTimerInfoFromDB();
+        // updateTimerObj($(this));
+        // getTimerInfoFromDB();
     });
     $("#timer3").find(".hours, .minutes, .seconds, .timername").keyup(function () {
-        updateTimerObj($(this));
-        getTimerInfoFromDB();
+        // updateTimerObj($(this));
+        // getTimerInfoFromDB();
     });
 
 
